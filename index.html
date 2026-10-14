@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#172a2c">
+  <title>Cat’s Journey — Forest Whispers</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Cat's Journey"><span class="brand-mark">✦</span><span><strong>CAT’S
+            JOURNEY</strong><small>FOREST WHISPERS · CHAPTER 1</small></span></a>
+      <div class="top-actions">
+        <div class="status-pill"><span class="status-dot"></span><span>Лесная поляна</span></div><button
+          id="playerNameButton" class="player-name-button" type="button" aria-haspopup="dialog" title="Изменить имя">🐾
+          <span id="playerNameLabel">Котик</span></button><button id="rankingButton" class="ranking-button"
+          type="button" aria-haspopup="dialog">🏆 <span>Рейтинг</span></button><button id="soundButton"
+          class="icon-button" aria-label="Переключить звук" title="Звук">♫</button>
+      </div>
+    </header>
+    <section class="play-area" aria-label="Игровое поле">
+      <canvas id="gameCanvas" aria-label="Игра Cat's Journey"></canvas>
+      <div class="scene-vignette"></div>
+      <div class="hud">
+        <section class="quest-card glass">
+          <div class="quest-kicker"><span class="sparkle">✧</span> ТЕКУЩЕЕ ЗАДАНИЕ</div>
+          <h1 id="questTitle">Шёпот леса</h1>
+          <p id="questText">Найди Луну у старого дуба.</p>
+          <div class="quest-progress"><span id="questProgressBar"></span></div>
+          <div class="quest-foot"><span id="questStep">Шаг 1 из 3</span><span class="quest-reward">✿ цветок</span></div>
+        </section>
+        <div class="collectible glass"><span class="fish-icon">♧</span><span><strong
+              id="fishCount">0/50</strong><small>рыбки</small></span></div>
+        <div class="secret-counter glass"><span>✦</span><strong id="moonstoneCount">0/3</strong><small>осколки</small>
+        </div>
+        <div class="run-timer glass" aria-live="off"><span>◷</span><strong id="runTimer">00:00</strong></div>
+        <div class="location-label"><span class="location-pin">⌖</span><span><strong>ТИХАЯ ПОЛЯНА</strong><small>Шёпот
+              ветра доносит тайны…</small></span></div>
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+        <div id="dialogue" class="dialogue glass" hidden>
+          <div class="dialogue-avatar">☾</div>
+          <div class="dialogue-copy"><strong id="dialogueName">Луна</strong>
+            <p id="dialogueText"></p>
+          </div><button id="dialogueNext" class="dialogue-next">Продолжить <span>↗</span></button>
+        </div>
+        <div class="controls-hint">WASD / ← ↑ ↓ → <span>·</span> E — взаимодействовать</div>
+      </div>
+      <div class="mobile-controls" aria-label="Сенсорное управление">
+        <div class="dpad"><button data-dir="up" aria-label="Вверх">▲</button>
+          <div class="dpad-middle"><button data-dir="left" aria-label="Влево">◀</button><span
+              class="dpad-center">✦</span><button data-dir="right" aria-label="Вправо">▶</button></div><button
+            data-dir="down" aria-label="Вниз">▼</button>
+        </div><button id="interactTouch" class="interact-touch"><span>✧</span><small>Действие</small></button>
+      </div>
+    </section>
+    <footer class="bottom-bar">
+      <div class="tip"><span class="tip-icon">✧</span><span><strong>Маленькие открытия</strong><small>Найди 50 рыбок, 3
+            осколка и секретный сундук.</small></span></div>
+      <div class="footer-meta"><span class="online-dot"></span> Автосохранение на устройстве <span
+          class="footer-sep">/</span> V2.3</div>
+    </footer>
+  </main>
+  <section id="nameModal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="nameTitle">
+    <form id="nameForm" class="modal-card glass name-card">
+      <button class="modal-close" id="closeName" type="button" aria-label="Закрыть">×</button>
+      <div class="modal-kicker">YOUR ADVENTURER</div>
+      <h2 id="nameTitle">Как тебя зовут?</h2>
+      <p class="modal-description">Это имя будет отображаться в рейтинге на этом устройстве.</p>
+      <label class="name-label" for="playerNameInput">Имя игрока</label>
+      <input id="playerNameInput" class="name-input" maxlength="18" autocomplete="nickname"
+        placeholder="Например, Мурлыка" required>
+      <button class="primary-button" type="submit">Сохранить имя</button>
+    </form>
+  </section>
+  <section id="rankingModal" class="modal-backdrop" hidden role="dialog" aria-modal="true"
+    aria-labelledby="rankingTitle">
+    <div class="modal-card glass"><button class="modal-close" id="closeRanking" aria-label="Закрыть">×</button>
+      <div class="modal-kicker">FOREST WHISPERS</div>
+      <h2 id="rankingTitle">🏆 Лучшее время</h2>
+      <p class="modal-description">Рекорды, сохранённые в этом браузере.</p>
+      <ol id="rankingList" class="ranking-list"></ol>
+      <p class="local-note">Рейтинг!</p><button class="primary-button" id="closeRankingBottom">Продолжить игру</button>
+    </div>
+  </section>
+  <section id="victoryModal" class="modal-backdrop victory-backdrop" hidden role="dialog" aria-modal="true"
+    aria-labelledby="victoryTitle">
+    <div class="modal-card victory-card glass">
+      <div class="victory-sparkles">✦ · ✧ · ✦</div>
+      <div class="winner-cat" aria-label="Котик-победитель"><span class="winner-crown">👑</span><span
+          class="winner-face">🐱</span></div>
+      <div class="modal-kicker">FOREST WHISPERS · CHAPTER 1</div>
+      <h2 id="victoryTitle">Лесная легенда!</h2>
+      <p class="modal-description">Ты собрала все сокровища и открыла тайный сундук.</p>
+      <div class="victory-time-label">ВРЕМЯ ПРОХОЖДЕНИЯ</div>
+      <div id="victoryTime" class="victory-time">00:00</div>
+      <div class="victory-stats"><span>🐟 <strong id="victoryFish">50/50</strong></span><span>✦ <strong
+            id="victoryShards">3/3</strong></span></div><button id="playAgainButton" class="primary-button">↻ Играть
+        снова</button><button id="victoryRankingButton" class="secondary-button">Посмотреть рейтинг</button>
+    </div>
+  </section>
+
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    window.CAT_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyCjyL_gG74gaiE4CWtYf53rvOO-ctuzwGI",
+      authDomain: "cats-journey-v2.firebaseapp.com",
+      projectId: "cats-journey-v2",
+      storageBucket: "cats-journey-v2.firebasestorage.app",
+      messagingSenderId: "34560285619",
+      appId: "1:34560285619:web:f127261b1027139e4809c6",
+      measurementId: "G-MJQRNKY398"
+    };
+  </script>
+
+  <script src="js/quests.js"></script>
+  <script src="js/game.js"></script>
+</body>
+
+
+</html>
